@@ -19,7 +19,7 @@ CREATE TABLE vinyls (
     price NUMERIC(10,2) NOT NULL CHECK (price > 0),
     description TEXT,
     released_at CHAR(4) NOT NULL CHECK(released_at ~ '^[0-9]{4}$'), -- Ano em formato YYYY
-    image_url TEXT NOT NULL CHECK (length(image_url) > 0
+    image_url TEXT NOT NULL CHECK (length(image_url) > 0)
 );
 
 -- Tabela de Pedidos adicionada para suportar o endpoint /order/list
