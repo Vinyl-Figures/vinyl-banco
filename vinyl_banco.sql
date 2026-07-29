@@ -25,7 +25,7 @@ CREATE TABLE vinyls (
 -- Tabela de Pedidos adicionada para suportar o endpoint /order/list
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
-    id_user INTEGER NOT NULL REFERENCES users(id),
+    id_user BIGINT NOT NULL REFERENCES users(id),
     total_price NUMERIC(10,2) NOT NULL CHECK (total_price >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -33,8 +33,8 @@ CREATE TABLE orders (
 -- Itens do pedido (N para N entre orders e vinyls)
 CREATE TABLE order_items (
     id BIGSERIAL PRIMARY KEY,
-    id_order INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    id_vinyl INTEGER NOT NULL REFERENCES vinyls(id),
+    id_order BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    id_vinyl BIGINT NOT NULL REFERENCES vinyls(id),
     price_at_purchase NUMERIC(10,2) NOT NULL CHECK (price_at_purchase > 0) -- Garante o histórico se o preço do vinil mudar
 );
 
@@ -44,8 +44,8 @@ CREATE TABLE payments (
     payment_method payment_method NOT NULL,
     status status NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    id_user INTEGER NOT NULL REFERENCES users(id),
-    id_order INTEGER REFERENCES orders(id) -- Vincula o pagamento ao pedido
+    id_user BIGINT NOT NULL REFERENCES users(id),
+    id_order BIGINT REFERENCES orders(id) -- Vincula o pagamento ao pedido
 );
 
 CREATE TABLE artists (
@@ -67,36 +67,36 @@ CREATE TABLE genres (
 
 CREATE TABLE vinyl_genres (
     id BIGSERIAL PRIMARY KEY,
-    id_vinyl INTEGER NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
-    id_genre INTEGER NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
+    id_vinyl BIGINT NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
+    id_genre BIGINT NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
     UNIQUE(id_vinyl, id_genre)
 );
 
 CREATE TABLE genre_favorites (
     id BIGSERIAL PRIMARY KEY,
-    id_user INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    id_genre INTEGER NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
+    id_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id_genre BIGINT NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
     UNIQUE(id_user, id_genre)
 );
 
 CREATE TABLE carts (
     id BIGSERIAL PRIMARY KEY,
-    id_user INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    id_vinyl INTEGER NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
+    id_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id_vinyl BIGINT NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
     UNIQUE(id_user, id_vinyl)
 );
 
 CREATE TABLE vinyl_artists (
     id BIGSERIAL PRIMARY KEY,
-    id_vinyl INTEGER NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
-    id_artist INTEGER NOT NULL REFERENCES artists(id) ON DELETE CASCADE,
+    id_vinyl BIGINT NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
+    id_artist BIGINT NOT NULL REFERENCES artists(id) ON DELETE CASCADE,
     UNIQUE(id_vinyl, id_artist)
 );
 
 CREATE TABLE user_accessibility (
     id BIGSERIAL PRIMARY KEY,
-    id_user INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    id_accessibility INTEGER NOT NULL REFERENCES accessibility(id) ON DELETE CASCADE,
+    id_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    id_accessibility BIGINT NOT NULL REFERENCES accessibility(id) ON DELETE CASCADE,
     UNIQUE(id_user, id_accessibility)
 );
 
@@ -105,5 +105,5 @@ CREATE TABLE addresses (
     number VARCHAR(12) NOT NULL CHECK (length(number) > 0),
     complement TEXT,
     zip_code VARCHAR(8) NOT NULL CHECK (zip_code ~ '^[0-9]{8}$'),
-    id_user INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+    id_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
