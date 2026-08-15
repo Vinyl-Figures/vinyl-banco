@@ -10,7 +10,7 @@ CREATE TABLE users (
     document VARCHAR(11) UNIQUE NOT NULL CHECK (document ~ '^[0-9]{11}$'),
     cellphone VARCHAR(20) NOT NULL UNIQUE CHECK (length(cellphone) > 0),
     email VARCHAR(150) NOT NULL UNIQUE CHECK (length(email) > 0),
-    password VARCHAR(255) NOT NULL CHECK (length(password) > 0) -- Armazena hash
+    password VARCHAR(255) NOT NULL CHECK (length(password) > 0)
 );
 
 CREATE TABLE vinyls (
@@ -18,8 +18,16 @@ CREATE TABLE vinyls (
     title VARCHAR(60) NOT NULL CHECK (length(title) > 0),
     price NUMERIC(10,2) NOT NULL CHECK (price > 0),
     description TEXT,
-    released_at CHAR(4) NOT NULL CHECK(released_at ~ '^[0-9]{4}$'), -- Ano em formato YYYY
+    released_at CHAR(4) NOT NULL CHECK(released_at ~ '^[0-9]{4}$'),
     image_url TEXT NOT NULL CHECK (length(image_url) > 0)
+);
+
+-- Cupons de desconto
+CREATE TABLE coupons (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(30) UNIQUE NOT NULL,
+    discount_percent NUMERIC(5,2) NOT NULL
+        CHECK (discount_percent > 0 AND discount_percent <= 100)
 );
 
 -- Tabela de Pedidos adicionada para suportar o endpoint /order/list
@@ -27,6 +35,8 @@ CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
     id_user BIGINT NOT NULL REFERENCES users(id),
     total_price NUMERIC(10,2) NOT NULL CHECK (total_price >= 0),
+    shipping_price NUMERIC(10,2) NOT NULL DEFAULT 0,
+    coupon_code VARCHAR(30),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,7 +45,8 @@ CREATE TABLE order_items (
     id BIGSERIAL PRIMARY KEY,
     id_order BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     id_vinyl BIGINT NOT NULL REFERENCES vinyls(id),
-    price_at_purchase NUMERIC(10,2) NOT NULL CHECK (price_at_purchase > 0) -- Garante o histórico se o preço do vinil mudar
+    price_at_purchase NUMERIC(10,2) NOT NULL CHECK (price_at_purchase > 0),
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0)
 );
 
 CREATE TABLE payments (
@@ -45,7 +56,7 @@ CREATE TABLE payments (
     status status NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_user BIGINT NOT NULL REFERENCES users(id),
-    id_order BIGINT REFERENCES orders(id) -- Vincula o pagamento ao pedido
+    id_order BIGINT REFERENCES orders(id)
 );
 
 CREATE TABLE artists (
@@ -83,6 +94,7 @@ CREATE TABLE carts (
     id BIGSERIAL PRIMARY KEY,
     id_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     id_vinyl BIGINT NOT NULL REFERENCES vinyls(id) ON DELETE CASCADE,
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
     UNIQUE(id_user, id_vinyl)
 );
 
