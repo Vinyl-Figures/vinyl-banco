@@ -36,7 +36,7 @@ CREATE TABLE orders (
     id_user BIGINT NOT NULL REFERENCES users(id),
     total_price NUMERIC(10,2) NOT NULL CHECK (total_price >= 0),
     shipping_price NUMERIC(10,2) NOT NULL DEFAULT 0,
-    coupon_code VARCHAR(30),
+    coupon_code VARCHAR(30) REFERENCES coupons(code),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
